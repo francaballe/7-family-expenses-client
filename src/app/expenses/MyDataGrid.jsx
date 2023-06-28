@@ -7,6 +7,8 @@ import theme from "../theme";
 import axios from "axios";
 import MonthContext from './MonthContext';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/navigation';
+
 
 const columns = [
   { field: 'user_name', headerName: 'User', width: 90, /* headerAlign: 'center' */ },
@@ -56,20 +58,23 @@ const columns = [
 const MyDataGrid = ({token}) => {
 
 //Some Local States
-const [buttonText, setButtonText] = React.useState('New Expense');
 const [gridData,setGridData] = React.useState(null);
 const { selectedMonth } = React.useContext(MonthContext);
 const [myCurrentMonth, setMyCurrentMonth] = React.useState(null);
+const [disabledNewExpense,setDisabledNewExpense] = React.useState(false);
+const router = useRouter();
 
 
 React.useEffect(() => {
   if (selectedMonth){    
     const dateObj = new Date(selectedMonth); // Convert selectedMonth to a Date object  
-    const monthNumber = dateObj.getMonth() + 1; // Get the month number (0-indexed)
+    const monthNumber = dateObj.getMonth(); // Get the month number (0-indexed)
     setMyCurrentMonth(monthNumber)
     //console.log("Month Number:", monthNumber);  
+    if (dayjs().month()!==monthNumber) setDisabledNewExpense(true)    
+    else setDisabledNewExpense(false)
   }   
-}, [selectedMonth]);
+},[selectedMonth]);
 
 
 React.useEffect(()=>{
@@ -92,14 +97,14 @@ React.useEffect(()=>{
   let rows = []  
   if (gridData && gridData.length){    
     //months start with 0 for junuary (and 11 for december)
-    const filteredByMonthData = gridData.filter(oneData => new Date(oneData.expense_date).getMonth() === myCurrentMonth-1);
+    const filteredByMonthData = gridData.filter(oneData => new Date(oneData.expense_date).getMonth() === myCurrentMonth);
     //console.log("filtered data:", filteredByMonthData)
     rows = [...filteredByMonthData]
   }      
 
   //SOME HANDLERS
-  const handleButtonClick = () => {
-    //setButtonText('');
+  const handleButtonClick = () => {    
+    router.push('/expenses/newexpense') 
   };    
 
 
@@ -129,7 +134,7 @@ React.useEffect(()=>{
       </Box>
 
       <Box py='10px' sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <Button color='secondary' variant="contained" startIcon={<MonetizationOnOutlinedIcon/>} onClick={handleButtonClick}>{buttonText}</Button>          
+        <Button disabled={disabledNewExpense} color='secondary' variant="contained" startIcon={<MonetizationOnOutlinedIcon/>} onClick={handleButtonClick}>New Expense</Button>          
       </Box>      
     </Box>
   );
