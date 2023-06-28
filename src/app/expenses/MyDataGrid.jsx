@@ -119,9 +119,15 @@ React.useEffect(()=>{
         //checkboxSelection
         disableRowSelectionOnClick
         //disableSelectionOnClick
-      >
-        
+      >        
       </DataGrid>
+
+      <Box py='10px' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div>
+            Total: {rows.reduce((sum, row) => sum + parseFloat(row.amount), 0)}
+          </div>
+      </Box>
+
       <Box py='10px' sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <Button color='secondary' variant="contained" startIcon={<MonetizationOnOutlinedIcon/>} onClick={handleButtonClick}>{buttonText}</Button>          
       </Box>      
